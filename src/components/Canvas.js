@@ -2,25 +2,19 @@ import React, { Component } from 'react';
 import '../styles/Canvas.css';
 
 class Canvas extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
-    console.log('render');
     return (
       <canvas
         className='Canvas'
         ref={
           (canvas) => {
-            if (canvas !== null) {
-              this.canvas = canvas;
-              this.context = canvas.getContext('2d');
-            }
+            if (canvas === null) return;
+            this.canvas = canvas;
+            this.context = canvas.getContext('2d');
           }
         }
-        width={100}
-        height={100}
+        width={500}
+        height={500}
         onMouseDown={this.mouseDownHandler.bind(this)}
         onMouseUp={this.mouseUpHandler.bind(this)}
         onMouseMove={this.mouseMoveHandler.bind(this)}
@@ -30,7 +24,6 @@ class Canvas extends Component {
   }
 
   mouseDownHandler(e) {
-    console.log('mouse down');
     this.shouldPaint = true;
 		this.startPoint = this.positionFromEvent(e);
     this.paintMove(this.positionFromEvent(e));
@@ -46,7 +39,6 @@ class Canvas extends Component {
   }
 
   mouseOutHandler(e) {
-    console.log('mouse out');
     this.shouldPaint = false;
   }
 

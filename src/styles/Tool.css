@@ -1,0 +1,9 @@
+.Tool {
+  width: 100%;
+  height: 100%;
+  background-color: #ff0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
