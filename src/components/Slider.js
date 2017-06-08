@@ -7,7 +7,7 @@ import Tool from './Tool';
 class Slider extends Component {
   render() {
     return (
-      <Tool>
+      <Tool hoverable={false}>
         <RcSlider
           maximumTrackStyle={{
             backgroundColor: '#bbb',
@@ -20,7 +20,7 @@ class Slider extends Component {
             marginTop: -3,
           }}
           handleStyle={{
-            backgroundColor: '#888',
+            backgroundColor: '#000',
             border: 0,
             height: 28,
             width: 28,

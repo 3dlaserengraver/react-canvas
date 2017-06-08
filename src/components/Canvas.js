@@ -3,6 +3,9 @@ import '../styles/Canvas.css';
 
 class Canvas extends Component {
   render() {
+    if (typeof(this.context) !== 'undefined' && typeof(this.canvas) !== 'undefined') {
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
     return (
       <canvas
         className='Canvas'

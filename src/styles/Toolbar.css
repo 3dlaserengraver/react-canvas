@@ -1,6 +1,5 @@
 .Toolbar {
-  height: 50px;
-  background-color: #f00;
+  flex-grow: 0;
   display: flex;
   flex-direction: row;
 }

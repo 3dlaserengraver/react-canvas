@@ -11,8 +11,17 @@ class App extends Component {
     return (
       <div className='App'>
         <Toolbar>
-          <Tool small={true}>
+          <Tool
+            small={true}
+            onClick={this.clear.bind(this)}
+          >
             <Icon icon='trash' />
+          </Tool>
+          <Tool
+            small={true}
+            onClick={this.upload.bind(this)}
+          >
+            <Icon icon='upload' />
           </Tool>
           <Slider />
           <Slider />
@@ -20,6 +29,31 @@ class App extends Component {
         <Canvas />
       </div>
     );
+  }
+
+  upload() {
+    const options = {
+      method: 'POST',
+      body: 'asdf'
+    }
+    fetch('upload', options)
+      .then(response => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          throw new Error('Request failed with status: '+response.status);
+        }
+      })
+      .then(blob => {
+        console.log(blob);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  clear() {
+    this.forceUpdate();
   }
 }
 

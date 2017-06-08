@@ -3,13 +3,13 @@ import '../styles/Tool.css';
 
 class Tool extends Component {
   render() {
-    const style = this.props.small ? {
-      flexGrow: 0
-    } : null;
+    let className = 'Tool';
+    if (this.props.small) className += ' small';
+    if (this.props.hoverable) className += ' hoverable';
+
     return (
       <div
-        className='Tool'
-        style={style}
+        className={className}
         onClick={this.props.onClick}
       >
         {this.props.children}
@@ -19,7 +19,8 @@ class Tool extends Component {
 }
 
 Tool.defaultProps = {
-  small: false
+  small: false,
+  hoverable: true
 }
 
 export default Tool;

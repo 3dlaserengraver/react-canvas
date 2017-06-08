@@ -3,7 +3,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 50px;
   flex-grow: 1;
   flex-basis: 0;
   padding: 0 20px;
+}
+
+.Tool.small {
+  flex-grow: 0;
+}
+
+.Tool.hoverable:hover {
+  cursor: pointer;
 }

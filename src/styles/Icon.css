@@ -1,1 +1,3 @@
-.Icon { }
+.Tool:hover .Icon path {
+  fill: #777;
+}
