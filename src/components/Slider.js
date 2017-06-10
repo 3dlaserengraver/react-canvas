@@ -9,6 +9,8 @@ class Slider extends Component {
     return (
       <Tool hoverable={false}>
         <RcSlider
+          min={this.props.min}
+          max={this.props.max}
           maximumTrackStyle={{
             backgroundColor: '#bbb',
             height: 10,
@@ -27,9 +29,15 @@ class Slider extends Component {
             marginLeft: -14,
             marginTop: -12
           }}
+          onAfterChange={this.onChange.bind(this)}
+          ref={(rcslider) => {this.rcslider = rcslider;}}
         />
       </Tool>
     );
+  }
+
+  onChange() {
+    this.props.onChange(this.rcslider.state.value);
   }
 }
 

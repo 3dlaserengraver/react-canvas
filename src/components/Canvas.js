@@ -2,20 +2,19 @@ import React, { Component } from 'react';
 import '../styles/Canvas.css';
 
 class Canvas extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      brushStroke: props.brushStroke,
+      brushShade: props.brushShade
+    };
+  }
+
   render() {
-    if (typeof(this.context) !== 'undefined' && typeof(this.canvas) !== 'undefined') {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
     return (
       <canvas
         className='Canvas'
-        ref={
-          (canvas) => {
-            if (canvas === null) return;
-            this.canvas = canvas;
-            this.context = canvas.getContext('2d');
-          }
-        }
+        ref={(canvas) => {this.canvas = canvas;}}
         width={500}
         height={500}
         onMouseDown={this.mouseDownHandler.bind(this)}
@@ -25,6 +24,8 @@ class Canvas extends Component {
       />
     );
   }
+
+  // Event handlers
 
   mouseDownHandler(e) {
     this.shouldPaint = true;
@@ -45,6 +46,8 @@ class Canvas extends Component {
     this.shouldPaint = false;
   }
 
+  // Painting
+
   paintMove({x, y}) {
     if (this.shouldPaint) {
       let {x: xs, y: ys} = this.startPoint;
@@ -58,28 +61,50 @@ class Canvas extends Component {
 
   paintPath(points) {
     if (Array.isArray(points) && points.length > 0) {
-      this.context.beginPath();
-      this.context.strokeStyle = 'rgb(0, 0, 0)';
-      this.context.lineJoin = 'round';
-      this.context.lineCap = 'round';
-      this.context.lineWidth = 10;
-      this.context.moveTo(points[0].x, points[0].y);
+      const shade = this.state.brushShade;
+      const context = this.canvas.getContext('2d');
+      context.beginPath();
+      context.strokeStyle = 'rgb('+shade+', '+shade+', '+shade+')';
+      context.lineJoin = 'round';
+      context.lineCap = 'round';
+      context.lineWidth = this.state.brushStroke;
+      context.moveTo(points[0].x, points[0].y);
       for (var i = 0; i < points.length; i++) {
-        this.context.lineTo(points[i].x, points[i].y);
+        context.lineTo(points[i].x, points[i].y);
       }
-
-      this.context.closePath();
-      this.context.stroke();
+      context.closePath();
+      context.stroke();
     }
   }
 
   positionFromEvent(e) {
-    let canvasWidth = this.canvas.clientWidth;
-    let canvasHeight = this.canvas.clientHeight;
+    const canvasWidth = this.canvas.clientWidth;
+    const canvasHeight = this.canvas.clientHeight;
     return {
       x: (e.clientX - this.canvas.offsetLeft) / canvasWidth * this.canvas.width,
       y: (e.clientY - this.canvas.offsetTop) / canvasHeight * this.canvas.height
     }
+  }
+
+  // Public
+
+  clear() {
+    const context = this.canvas.getContext('2d');
+    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  getImageData() {
+    const context = this.canvas.getContext('2d');
+    const imageData = context.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
+    let mappedImageData = [];
+    for (var i=0; i<(this.canvas.height); i++) {
+      let row = [];
+      for (var j=3; j<(this.canvas.width*4); j+=4) {
+        row.push(imageData[j]);
+      }
+      mappedImageData.push(row);
+    }
+    return mappedImageData;
   }
 }
 

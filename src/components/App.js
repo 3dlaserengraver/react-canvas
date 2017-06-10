@@ -23,18 +23,34 @@ class App extends Component {
           >
             <Icon icon='upload' />
           </Tool>
-          <Slider />
-          <Slider />
+          <Slider
+            min={1}
+            max={100}
+            onChange={this.strokeChange.bind(this)}
+            ref={(slider) => {this.strokeSlider = slider;}}
+          />
+          <Slider
+            min={0}
+            max={255}
+            onChange={this.shadeChange.bind(this)}
+            ref={(slider) => {this.shadeSlider = slider;}}
+          />
         </Toolbar>
-        <Canvas />
+        <Canvas
+          brushStroke={1}
+          brushShade={0}
+          ref={(canvas) => {this.canvas = canvas;}}
+        />
       </div>
     );
   }
 
   upload() {
+    console.log('upload bitmap');
+    const imageData = this.canvas.getImageData();
     const options = {
       method: 'POST',
-      body: 'asdf'
+      body: JSON.stringify(imageData)
     }
     fetch('upload', options)
       .then(response => {
@@ -53,7 +69,22 @@ class App extends Component {
   }
 
   clear() {
-    this.forceUpdate();
+    console.log('clear canvas');
+    this.canvas.clear();
+  }
+
+  strokeChange(value) {
+    console.log('stroke changed to '+value);
+    this.canvas.setState({
+      brushStroke: value
+    })
+  }
+
+  shadeChange(value) {
+    console.log('shade changed to '+value);
+    this.canvas.setState({
+      brushShade: value
+    })
   }
 }
 
