@@ -1,6 +1,6 @@
 {
-  "name": "ceng-499",
-  "version": "0.1.0",
+  "name": "react-canvas",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "rc-slider": "^8.0.2",
@@ -18,5 +18,9 @@
   },
   "jshintConfig": {
     "esversion": 6
-  }
+  },
+  "author": "Ashton Meuser",
+  "license": "MIT",
+  "description": "HTML 5 canvas as frontend. Sends bitmap to server.",
+  "repository": "https://github.com/3dlaserengraver/react-canvas.git"
 }
