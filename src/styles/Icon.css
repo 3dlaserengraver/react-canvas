@@ -1,3 +1,4 @@
-.Tool:hover .Icon path {
+.Tool.hoverable.hover .Icon path,
+.Tool.hoverable.active .Icon path {
   fill: #777;
 }

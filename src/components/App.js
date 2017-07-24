@@ -23,6 +23,13 @@ class App extends Component {
           >
             <Icon icon='upload' />
           </Tool>
+          <Tool
+            small={true}
+            onClick={this.toggleTextEntry.bind(this)}
+            ref={(toggleTextEntryTool) => {this.toggleTextEntryTool = toggleTextEntryTool;}}
+          >
+            <Icon icon='font' />
+          </Tool>
           <Slider
             min={1}
             max={100}
@@ -39,6 +46,7 @@ class App extends Component {
         <Canvas
           brushStroke={1}
           brushShade={0}
+          textEntry={false}
           ref={(canvas) => {this.canvas = canvas;}}
         />
       </div>
@@ -50,8 +58,14 @@ class App extends Component {
     const imageData = this.canvas.getImageData();
     const options = {
       method: 'POST',
-      body: JSON.stringify(imageData)
-    }
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        bitmap: imageData
+      })
+    };
     fetch('upload', options)
       .then(response => {
         if (response.ok) {
@@ -73,18 +87,29 @@ class App extends Component {
     this.canvas.clear();
   }
 
+  toggleTextEntry() {
+    const enabled = !this.canvas.state.textEntry;
+    this.toggleTextEntryTool.setState({
+      active: enabled
+    });
+    console.log(enabled ? 'text entry enabled' : 'text entry disabled');
+    this.canvas.setState({
+      textEntry: enabled
+    });
+  }
+
   strokeChange(value) {
     console.log('stroke changed to '+value);
     this.canvas.setState({
       brushStroke: value
-    })
+    });
   }
 
   shadeChange(value) {
     console.log('shade changed to '+value);
     this.canvas.setState({
       brushShade: value
-    })
+    });
   }
 }
 

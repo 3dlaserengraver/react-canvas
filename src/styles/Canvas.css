@@ -3,3 +3,7 @@
   background-color: #ccc;
   display: block;
 }
+
+.Canvas:focus {
+  outline: none;
+}
