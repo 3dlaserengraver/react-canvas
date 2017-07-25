@@ -5,9 +5,20 @@ import Toolbar from './Toolbar';
 import Tool from './Tool';
 import Slider from './Slider';
 import Icon from './Icon';
+import TextField from './TextField';
 
 class App extends Component {
   render() {
+    const consoleToolbar = this.toggleConsoleTool!==undefined && this.toggleConsoleTool.state.active ? (
+      <Toolbar>
+        <TextField
+          placeholder='Enter G-code'
+          onEnter={this.send.bind(this)}
+          ref={(consoleTextField) => {this.consoleTextField = consoleTextField;}}
+        />
+      </Toolbar>
+    ) : null;
+
     return (
       <div className='App'>
         <Toolbar>
@@ -30,6 +41,13 @@ class App extends Component {
           >
             <Icon icon='font' />
           </Tool>
+          <Tool
+            small={true}
+            onClick={this.toggleConsole.bind(this)}
+            ref={(toggleConsoleTool) => {this.toggleConsoleTool = toggleConsoleTool;}}
+          >
+            <Icon icon='console' />
+          </Tool>
           <Slider
             min={1}
             max={100}
@@ -43,6 +61,7 @@ class App extends Component {
             ref={(slider) => {this.shadeSlider = slider;}}
           />
         </Toolbar>
+        {consoleToolbar}
         <Canvas
           brushStroke={1}
           brushShade={0}
@@ -82,19 +101,60 @@ class App extends Component {
       });
   }
 
+  send() {
+    console.log('upload gcode');
+    const gcode = this.consoleTextField.state.value;
+    const options = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        gcode: gcode
+      })
+    };
+    fetch('send', options)
+      .then(response => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          throw new Error('Request failed with status: '+response.status);
+        }
+      })
+      .then(blob => {
+        this.consoleTextField.setState({
+          value: ''
+        });
+        console.log(blob);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   clear() {
     console.log('clear canvas');
     this.canvas.clear();
   }
 
   toggleTextEntry() {
-    const enabled = !this.canvas.state.textEntry;
     this.toggleTextEntryTool.setState({
-      active: enabled
+      active: !this.toggleTextEntryTool.state.active
+    }, () => {
+      console.log(this.toggleTextEntryTool.state.active ? 'text entry enabled' : 'text entry disabled');
+      this.canvas.setState({
+        textEntry: this.toggleTextEntryTool.state.active
+      });
     });
-    console.log(enabled ? 'text entry enabled' : 'text entry disabled');
-    this.canvas.setState({
-      textEntry: enabled
+  }
+
+  toggleConsole() {
+    this.toggleConsoleTool.setState({
+      active: !this.toggleConsoleTool.state.active
+    }, () => {
+      console.log(this.toggleConsoleTool.state.active ? 'console enabled' : 'console disabled');
+      this.forceUpdate();
     });
   }
 
