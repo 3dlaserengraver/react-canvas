@@ -153,7 +153,7 @@ class Canvas extends Component {
     for (var i=0; i<(this.canvas.height); i++) {
       let row = [];
       for (var j=2; j<(this.canvas.width*4); j+=4) {
-        row.push(imageData[i*this.canvas.width*4+j]);
+        row.push(255-imageData[i*this.canvas.width*4+j]); // RGB value must be inverted for power
       }
       mappedImageData.push(row);
     }
