@@ -1,9 +1,20 @@
-.Canvas {
+.Canvas.container {
   flex-grow: 1;
   background-color: #ccc;
   display: block;
+  position: relative;
 }
 
-.Canvas:focus {
+.Canvas.container .canvas:focus {
   outline: none;
+}
+
+.Canvas.container .canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
 }

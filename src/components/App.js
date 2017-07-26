@@ -9,12 +9,17 @@ import TextField from './TextField';
 
 class App extends Component {
   render() {
-    const consoleToolbar = this.toggleConsoleTool!==undefined && this.toggleConsoleTool.state.active ? (
+    const consoleToolbar = typeof this.toggleConsoleTool!=='undefined' && this.toggleConsoleTool.state.active ? (
       <Toolbar>
         <TextField
           placeholder='Enter G-code'
           onEnter={this.send.bind(this)}
           ref={(consoleTextField) => {this.consoleTextField = consoleTextField;}}
+        />
+        <TextField
+          placeholder='Server Response'
+          ref={(consoleResponse) => {this.consoleResponse = consoleResponse;}}
+          readOnly={true}
         />
       </Toolbar>
     ) : null;
@@ -72,6 +77,11 @@ class App extends Component {
     );
   }
 
+  componentDidMount() {
+    console.log('mounted');
+    this.clear();
+  }
+
   upload() {
     console.log('upload bitmap');
     const imageData = this.canvas.getImageData();
@@ -117,18 +127,24 @@ class App extends Component {
     fetch('send', options)
       .then(response => {
         if (response.ok) {
-          return response.blob();
+          return response.text();
         } else {
           throw new Error('Request failed with status: '+response.status);
         }
       })
-      .then(blob => {
+      .then(data => {
         this.consoleTextField.setState({
           value: ''
         });
-        console.log(blob);
+        this.consoleResponse.setState({
+          value: data
+        });
+        console.log(data);
       })
       .catch(error => {
+        this.consoleResponse.setState({
+          value: error.message
+        });
         console.log(error);
       });
   }

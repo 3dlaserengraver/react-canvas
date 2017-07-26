@@ -13,18 +13,30 @@ class Canvas extends Component {
 
   render() {
     return (
-      <canvas
-        tabIndex={1}
-        className='Canvas'
-        ref={(canvas) => {this.canvas = canvas;}}
-        width={500}
-        height={500}
-        onMouseDown={this.mouseDownHandler.bind(this)}
-        onMouseUp={this.mouseUpHandler.bind(this)}
-        onMouseMove={this.mouseMoveHandler.bind(this)}
-        onMouseOut={this.mouseOutHandler.bind(this)}
-        onKeyPress={this.keyUpHandler.bind(this)}
-      />
+      <div
+        className='Canvas container'
+        ref={(container) => {this.container = container;}}
+      >
+        <canvas
+          tabIndex={1}
+          className='canvas'
+          ref={(canvas) => {this.canvas = canvas;}}
+          width={500}
+          height={500}
+        />
+        <canvas
+          tabIndex={2}
+          className='canvas'
+          ref={(textCanvas) => {this.textCanvas = textCanvas;}}
+          width={500}
+          height={500}
+          onMouseDown={this.mouseDownHandler.bind(this)}
+          onMouseUp={this.mouseUpHandler.bind(this)}
+          onMouseMove={this.mouseMoveHandler.bind(this)}
+          onMouseOut={this.mouseOutHandler.bind(this)}
+          onKeyPress={this.keyUpHandler.bind(this)}
+        />
+      </div>
     );
   }
 
@@ -35,11 +47,11 @@ class Canvas extends Component {
   }
 
   mouseDownHandler(e) {
+    this.shouldPaint = true;
+    this.startPoint = this.positionFromEvent(e);
     if(this.state.textEntry) {
-      this.paintText(this.positionFromEvent(e));
+      this.paintText();
     } else {
-      this.shouldPaint = true;
-  		this.startPoint = this.positionFromEvent(e);
       this.paintMove(this.positionFromEvent(e));
     }
   }
@@ -49,8 +61,14 @@ class Canvas extends Component {
   }
 
   mouseMoveHandler(e) {
-    this.paintMove(this.positionFromEvent(e));
-		this.startPoint = this.positionFromEvent(e);
+    if (!this.shouldPaint) return;
+    if (this.state.textEntry) {
+      this.textMove(this.positionFromEvent(e));
+      this.startPoint = this.positionFromEvent(e);
+    } else {
+      this.paintMove(this.positionFromEvent(e));
+  		this.startPoint = this.positionFromEvent(e);
+    }
   }
 
   mouseOutHandler(e) {
@@ -64,22 +82,29 @@ class Canvas extends Component {
     return 'rgb('+shade+', '+shade+', '+shade+')';
   }
 
-  paintText({x, y}) {
-    const context = this.canvas.getContext('2d');
+  paintText() {
+    const context = this.textCanvas.getContext('2d');
+    if (typeof this.textPoint === 'undefined') this.textPoint = {x: this.canvas.width/2, y: this.canvas.height/2};
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
     context.font = this.state.brushStroke+'px Arial';
     context.fillStyle = this.shadeRgb();
-    context.fillText('Hello World', x, y);
+    context.fillText('Hello World', this.textPoint.x, this.textPoint.y);
+  }
+
+  textMove({x, y}) {
+    if (typeof this.textPoint === 'undefined') this.textPoint = {x: this.canvas.width/2, y: this.canvas.height/2};
+    let move = {x: x-this.startPoint.x, y: y-this.startPoint.y};
+    this.textPoint.x += move.x;
+    this.textPoint.y += move.y;
   }
 
   paintMove({x, y}) {
-    if (this.shouldPaint) {
-      let {x: xs, y: ys} = this.startPoint;
-      if (xs === x && ys === y) { // Paint at least 1 pixel
-        x++;
-        y++;
-      }
-      this.paintPath([this.startPoint, {x, y}]);
+    if (x===this.startPoint.x && y===this.startPoint.y) { // Paint at least 1 pixel
+      x++;
+      y++;
     }
+    this.paintPath([this.startPoint, {x, y}]);
   }
 
   paintPath(points) {
@@ -103,8 +128,8 @@ class Canvas extends Component {
     const canvasWidth = this.canvas.clientWidth;
     const canvasHeight = this.canvas.clientHeight;
     return {
-      x: (e.clientX - this.canvas.offsetLeft) / canvasWidth * this.canvas.width,
-      y: (e.clientY - this.canvas.offsetTop) / canvasHeight * this.canvas.height
+      x: (e.clientX - this.container.offsetLeft) / canvasWidth * this.canvas.width,
+      y: (e.clientY - this.container.offsetTop) / canvasHeight * this.canvas.height
     }
   }
 
@@ -112,6 +137,12 @@ class Canvas extends Component {
 
   clear() {
     const context = this.canvas.getContext('2d');
+    context.fillStyle = 'white';
+    context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  clearText() {
+    const context = this.textCanvas.getContext('2d');
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
@@ -121,8 +152,8 @@ class Canvas extends Component {
     let mappedImageData = [];
     for (var i=0; i<(this.canvas.height); i++) {
       let row = [];
-      for (var j=3; j<(this.canvas.width*4); j+=4) {
-        row.push(imageData[j]);
+      for (var j=2; j<(this.canvas.width*4); j+=4) {
+        row.push(imageData[i*this.canvas.width*4+j]);
       }
       mappedImageData.push(row);
     }
