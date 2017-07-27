@@ -31,8 +31,11 @@ class Canvas extends Component {
           onMouseDown={this.mouseDownHandler.bind(this)}
           onMouseUp={this.mouseUpHandler.bind(this)}
           onMouseMove={this.mouseMoveHandler.bind(this)}
-          onMouseOut={this.mouseOutHandler.bind(this)}
+          onMouseOut={this.mouseUpHandler.bind(this)}
           onKeyPress={this.keyUpHandler.bind(this)}
+          onTouchStart={this.mouseDownHandler.bind(this)}
+          onTouchEnd={this.mouseUpHandler.bind(this)}
+          onTouchMove={this.mouseMoveHandler.bind(this)}
         />
       </div>
     );
@@ -71,10 +74,6 @@ class Canvas extends Component {
       this.paintMove(this.positionFromEvent(e));
   		this.startPoint = this.positionFromEvent(e);
     }
-  }
-
-  mouseOutHandler(e) {
-    this.shouldPaint = false;
   }
 
   // Painting
@@ -132,9 +131,13 @@ class Canvas extends Component {
   positionFromEvent(e) {
     const canvasWidth = this.canvas.clientWidth;
     const canvasHeight = this.canvas.clientHeight;
+    const clientCoordinates = {
+      x: e.clientX || e.touches[0].clientX,
+      y: e.clientY || e.touches[0].clientY,
+    }
     return {
-      x: (e.clientX - this.container.offsetLeft) / canvasWidth * this.canvas.width,
-      y: (e.clientY - this.container.offsetTop) / canvasHeight * this.canvas.height
+      x: (clientCoordinates.x - this.container.offsetLeft) / canvasWidth * this.canvas.width,
+      y: (clientCoordinates.y - this.container.offsetTop) / canvasHeight * this.canvas.height
     }
   }
 

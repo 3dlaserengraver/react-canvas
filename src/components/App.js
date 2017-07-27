@@ -192,16 +192,16 @@ class App extends Component {
     if (this.state.textEnabled) {
       this.canvas.paintText(true); // Commit text to main canvas
     }
+    if (this.state.consoleEnabled && !this.state.textEnabled) this.toggleConsole();
     this.setState({
       textEnabled: !this.state.textEnabled,
-      consoleEnabled: this.state.textEnabled ? this.state.consoleEnabled : false,
       text: ''
     });
   }
 
   toggleConsole() {
+    if (this.state.textEnabled && !this.state.consoleEnabled) this.toggleTextEntry();
     this.setState({
-      textEnabled: this.state.consoleEnabled ? this.state.textEnabled : false,
       consoleEnabled: !this.state.consoleEnabled
     });
   }
