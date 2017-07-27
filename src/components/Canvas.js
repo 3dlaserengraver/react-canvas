@@ -18,10 +18,10 @@ class Canvas extends Component {
     return (
       <div
         className='Canvas container'
-        style={style}
         ref={(container) => {this.container = container;}}
       >
         <canvas
+          style={style}
           tabIndex={1}
           className='canvas'
           ref={(canvas) => {this.canvas = canvas;}}
@@ -29,6 +29,7 @@ class Canvas extends Component {
           height={this.props.imageSize}
         />
         <canvas
+          style={style}
           tabIndex={2}
           className='canvas'
           ref={(textCanvas) => {this.textCanvas = textCanvas;}}
@@ -142,7 +143,7 @@ class Canvas extends Component {
       y: typeof e.clientY!=='undefined' ? e.clientY : e.touches[0].clientY
     }
     return {
-      x: (clientCoordinates.x - this.container.offsetLeft) / canvasWidth * this.canvas.width,
+      x: (clientCoordinates.x - this.canvas.offsetLeft) / canvasWidth * this.canvas.width,
       y: (clientCoordinates.y - this.container.offsetTop) / canvasHeight * this.canvas.height
     }
   }

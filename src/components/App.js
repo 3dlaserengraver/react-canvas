@@ -116,6 +116,20 @@ class App extends Component {
       canvasSize: canvasSize
     });
     this.clear();
+    window.addEventListener('resize', this.handleResize.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize.bind(this));
+  }
+
+  handleResize() {
+    console.log('resize');
+    const canvas = ReactDOM.findDOMNode(this.canvas);
+    const canvasSize = Math.min(canvas.clientHeight, canvas.clientWidth);
+    this.setState({
+      canvasSize: canvasSize
+    });
   }
 
   upload() {
@@ -205,6 +219,8 @@ class App extends Component {
     this.setState({
       textEnabled: !this.state.textEnabled,
       text: ''
+    }, () => {
+      this.handleResize();
     });
   }
 
@@ -212,6 +228,8 @@ class App extends Component {
     if (this.state.textEnabled && !this.state.consoleEnabled) this.toggleTextEntry();
     this.setState({
       consoleEnabled: !this.state.consoleEnabled
+    }, () => {
+      this.handleResize();
     });
   }
 
