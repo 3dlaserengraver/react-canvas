@@ -24,14 +24,18 @@ class TextField extends Component {
   }
 
   changeHandler(e) {
+    const value = e.target.value;
+    console.log('tf change');
     this.setState({
-      value: e.target.value
+      value: value
+    }, () => {
+      if (typeof this.props.onChange !== 'undefined') this.props.onChange(this.state.value);
     });
   }
 
   keyDownHandler(e) {
-    if (e.keyCode===13 && this.state.value!=='') {
-      this.props.onEnter();
+    if (e.keyCode===13) {
+      if (typeof this.props.onEnter !== 'undefined') this.props.onEnter(this.state.value);
     }
   }
 }

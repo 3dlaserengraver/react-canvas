@@ -8,8 +8,19 @@ import Icon from './Icon';
 import TextField from './TextField';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      textEnabled: false,
+      consoleEnabled: false,
+      brushStroke: 1,
+      brushShade: 0,
+      text: ''
+    };
+  }
+
   render() {
-    const consoleToolbar = typeof this.toggleConsoleTool!=='undefined' && this.toggleConsoleTool.state.active ? (
+    const consoleToolbar = this.state.consoleEnabled ? (
       <Toolbar>
         <TextField
           placeholder='Enter G-code'
@@ -20,6 +31,16 @@ class App extends Component {
           placeholder='Server Response'
           ref={(consoleResponse) => {this.consoleResponse = consoleResponse;}}
           readOnly={true}
+        />
+      </Toolbar>
+    ) : null;
+
+    const textToolbar = this.state.textEnabled ? (
+      <Toolbar>
+        <TextField
+          placeholder='Enter Text'
+          onChange={this.changeText.bind(this)}
+          ref={(textTextField) => {this.textTextField = textTextField;}}
         />
       </Toolbar>
     ) : null;
@@ -42,6 +63,7 @@ class App extends Component {
           <Tool
             small={true}
             onClick={this.toggleTextEntry.bind(this)}
+            active={this.state.textEnabled}
             ref={(toggleTextEntryTool) => {this.toggleTextEntryTool = toggleTextEntryTool;}}
           >
             <Icon icon='font' />
@@ -49,6 +71,7 @@ class App extends Component {
           <Tool
             small={true}
             onClick={this.toggleConsole.bind(this)}
+            active={this.state.consoleEnabled}
             ref={(toggleConsoleTool) => {this.toggleConsoleTool = toggleConsoleTool;}}
           >
             <Icon icon='console' />
@@ -67,10 +90,13 @@ class App extends Component {
           />
         </Toolbar>
         {consoleToolbar}
+        {textToolbar}
         <Canvas
-          brushStroke={1}
-          brushShade={0}
-          textEntry={false}
+          size={500}
+          brushStroke={this.state.brushStroke}
+          brushShade={this.state.brushShade}
+          textEnabled={this.state.textEnabled}
+          text={this.state.text}
           ref={(canvas) => {this.canvas = canvas;}}
         />
       </div>
@@ -111,9 +137,8 @@ class App extends Component {
       });
   }
 
-  send() {
-    console.log('upload gcode');
-    const gcode = this.consoleTextField.state.value;
+  send(gcode) {
+    console.log('upload gcode '+gcode);
     const options = {
       method: 'POST',
       headers: {
@@ -149,41 +174,47 @@ class App extends Component {
       });
   }
 
+  changeText(text) {
+    console.log('change text to: '+text);
+    this.setState({
+      text: text
+    });
+  }
+
   clear() {
     console.log('clear canvas');
     this.canvas.clear();
   }
 
   toggleTextEntry() {
-    this.toggleTextEntryTool.setState({
-      active: !this.toggleTextEntryTool.state.active
-    }, () => {
-      console.log(this.toggleTextEntryTool.state.active ? 'text entry enabled' : 'text entry disabled');
-      this.canvas.setState({
-        textEntry: this.toggleTextEntryTool.state.active
-      });
+    console.log(this.state.textEnabled ? 'text disabled' : 'text enabled');
+    if (this.state.textEnabled) {
+      this.canvas.paintText(true); // Commit text to main canvas
+    }
+    this.setState({
+      textEnabled: !this.state.textEnabled,
+      consoleEnabled: this.state.textEnabled ? this.state.consoleEnabled : false,
+      text: ''
     });
   }
 
   toggleConsole() {
-    this.toggleConsoleTool.setState({
-      active: !this.toggleConsoleTool.state.active
-    }, () => {
-      console.log(this.toggleConsoleTool.state.active ? 'console enabled' : 'console disabled');
-      this.forceUpdate();
+    this.setState({
+      textEnabled: this.state.consoleEnabled ? this.state.textEnabled : false,
+      consoleEnabled: !this.state.consoleEnabled
     });
   }
 
   strokeChange(value) {
     console.log('stroke changed to '+value);
-    this.canvas.setState({
+    this.setState({
       brushStroke: value
     });
   }
 
   shadeChange(value) {
     console.log('shade changed to '+value);
-    this.canvas.setState({
+    this.setState({
       brushShade: value
     });
   }

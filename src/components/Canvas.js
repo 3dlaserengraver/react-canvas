@@ -5,9 +5,7 @@ class Canvas extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      brushStroke: props.brushStroke,
-      brushShade: props.brushShade,
-      textEntry: props.textEntry
+      textPoint: {x: this.props.size/2, y: this.props.size/2}
     };
   }
 
@@ -21,15 +19,15 @@ class Canvas extends Component {
           tabIndex={1}
           className='canvas'
           ref={(canvas) => {this.canvas = canvas;}}
-          width={500}
-          height={500}
+          width={this.props.size}
+          height={this.props.size}
         />
         <canvas
           tabIndex={2}
           className='canvas'
           ref={(textCanvas) => {this.textCanvas = textCanvas;}}
-          width={500}
-          height={500}
+          width={this.props.size}
+          height={this.props.size}
           onMouseDown={this.mouseDownHandler.bind(this)}
           onMouseUp={this.mouseUpHandler.bind(this)}
           onMouseMove={this.mouseMoveHandler.bind(this)}
@@ -38,6 +36,10 @@ class Canvas extends Component {
         />
       </div>
     );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    this.paintText();
   }
 
   // Event handlers
@@ -49,7 +51,7 @@ class Canvas extends Component {
   mouseDownHandler(e) {
     this.shouldPaint = true;
     this.startPoint = this.positionFromEvent(e);
-    if(this.state.textEntry) {
+    if(this.props.textEnabled) {
       this.paintText();
     } else {
       this.paintMove(this.positionFromEvent(e));
@@ -62,7 +64,7 @@ class Canvas extends Component {
 
   mouseMoveHandler(e) {
     if (!this.shouldPaint) return;
-    if (this.state.textEntry) {
+    if (this.props.textEnabled) {
       this.textMove(this.positionFromEvent(e));
       this.startPoint = this.positionFromEvent(e);
     } else {
@@ -78,25 +80,28 @@ class Canvas extends Component {
   // Painting
 
   shadeRgb() {
-    const shade = this.state.brushShade;
+    const shade = this.props.brushShade;
     return 'rgb('+shade+', '+shade+', '+shade+')';
   }
 
-  paintText() {
-    const context = this.textCanvas.getContext('2d');
-    if (typeof this.textPoint === 'undefined') this.textPoint = {x: this.canvas.width/2, y: this.canvas.height/2};
+  paintText(commit=false) {
+    const context = commit ? this.canvas.getContext('2d') : this.textCanvas.getContext('2d');
+    if (commit) this.setState({
+      textPoint: {x: this.props.size/2, y: this.props.size/2}
+    });
+    this.clearText();
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    context.font = this.state.brushStroke+'px Arial';
+    context.font = (this.props.brushStroke+5)+'px Arial';
     context.fillStyle = this.shadeRgb();
-    context.fillText('Hello World', this.textPoint.x, this.textPoint.y);
+    context.fillText(this.props.text, this.state.textPoint.x, this.state.textPoint.y);
   }
 
   textMove({x, y}) {
-    if (typeof this.textPoint === 'undefined') this.textPoint = {x: this.canvas.width/2, y: this.canvas.height/2};
     let move = {x: x-this.startPoint.x, y: y-this.startPoint.y};
-    this.textPoint.x += move.x;
-    this.textPoint.y += move.y;
+    this.state.textPoint.x += move.x;
+    this.state.textPoint.y += move.y;
+    this.paintText();
   }
 
   paintMove({x, y}) {
@@ -114,7 +119,7 @@ class Canvas extends Component {
       context.strokeStyle = this.shadeRgb();
       context.lineJoin = 'round';
       context.lineCap = 'round';
-      context.lineWidth = this.state.brushStroke;
+      context.lineWidth = this.props.brushStroke;
       context.moveTo(points[0].x, points[0].y);
       for (var i = 0; i < points.length; i++) {
         context.lineTo(points[i].x, points[i].y);
