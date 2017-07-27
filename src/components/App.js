@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom'
 import '../styles/App.css';
 import Canvas from './Canvas';
 import Toolbar from './Toolbar';
@@ -15,6 +16,7 @@ class App extends Component {
       consoleEnabled: false,
       brushStroke: 1,
       brushShade: 0,
+      canvasSize: undefined,
       text: ''
     };
   }
@@ -25,6 +27,7 @@ class App extends Component {
         <TextField
           placeholder='Enter G-code'
           onEnter={this.send.bind(this)}
+          ref={(consoleTextField) => {this.consoleTextField = consoleTextField;}}
         />
         <TextField
           placeholder='Server Response'
@@ -93,7 +96,8 @@ class App extends Component {
         {consoleToolbar}
         {textToolbar}
         <Canvas
-          size={500}
+          size={this.state.canvasSize}
+          imageSize={500}
           brushStroke={this.state.brushStroke}
           brushShade={this.state.brushShade}
           textEnabled={this.state.textEnabled}
@@ -106,6 +110,11 @@ class App extends Component {
 
   componentDidMount() {
     console.log('mounted');
+    const canvas = ReactDOM.findDOMNode(this.canvas);
+    const canvasSize = Math.min(canvas.clientHeight, canvas.clientWidth);
+    this.setState({
+      canvasSize: canvasSize
+    });
     this.clear();
   }
 

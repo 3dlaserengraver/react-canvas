@@ -5,37 +5,42 @@ class Canvas extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      textPoint: {x: this.props.size/2, y: this.props.size/2}
+      textPoint: {x: this.props.imageSize/2, y: this.props.imageSize/2}
     };
   }
 
   render() {
+    const style = typeof this.props.size==='undefined' ? null : {
+      width: this.props.size,
+      height: this.props.size
+    };
+
     return (
       <div
         className='Canvas container'
+        style={style}
         ref={(container) => {this.container = container;}}
       >
         <canvas
           tabIndex={1}
           className='canvas'
           ref={(canvas) => {this.canvas = canvas;}}
-          width={this.props.size}
-          height={this.props.size}
+          width={this.props.imageSize}
+          height={this.props.imageSize}
         />
         <canvas
           tabIndex={2}
           className='canvas'
           ref={(textCanvas) => {this.textCanvas = textCanvas;}}
-          width={this.props.size}
-          height={this.props.size}
+          width={this.props.imageSize}
+          height={this.props.imageSize}
           onMouseDown={this.mouseDownHandler.bind(this)}
           onMouseUp={this.mouseUpHandler.bind(this)}
           onMouseMove={this.mouseMoveHandler.bind(this)}
           onMouseOut={this.mouseUpHandler.bind(this)}
-          onKeyPress={this.keyUpHandler.bind(this)}
           onTouchStart={this.mouseDownHandler.bind(this)}
           onTouchEnd={this.mouseUpHandler.bind(this)}
-          onTouchMove={this.mouseMoveHandler.bind(this)}
+          onTouchMove={this.touchMoveHandler.bind(this)}
         />
       </div>
     );
@@ -47,8 +52,9 @@ class Canvas extends Component {
 
   // Event handlers
 
-  keyUpHandler(e) {
-    console.log(String.fromCharCode(e.which));
+  touchMoveHandler(e) {
+    e.preventDefault();
+    this.mouseMoveHandler(e);
   }
 
   mouseDownHandler(e) {
@@ -86,7 +92,7 @@ class Canvas extends Component {
   paintText(commit=false) {
     const context = commit ? this.canvas.getContext('2d') : this.textCanvas.getContext('2d');
     if (commit) this.setState({
-      textPoint: {x: this.props.size/2, y: this.props.size/2}
+      textPoint: {x: this.props.imageSize/2, y: this.props.imageSize/2}
     });
     this.clearText();
     context.textAlign = 'center';
@@ -132,8 +138,8 @@ class Canvas extends Component {
     const canvasWidth = this.canvas.clientWidth;
     const canvasHeight = this.canvas.clientHeight;
     const clientCoordinates = {
-      x: e.clientX || e.touches[0].clientX,
-      y: e.clientY || e.touches[0].clientY,
+      x: typeof e.clientX!=='undefined' ? e.clientX : e.touches[0].clientX,
+      y: typeof e.clientY!=='undefined' ? e.clientY : e.touches[0].clientY
     }
     return {
       x: (clientCoordinates.x - this.container.offsetLeft) / canvasWidth * this.canvas.width,

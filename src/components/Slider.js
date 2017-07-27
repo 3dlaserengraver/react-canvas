@@ -18,12 +18,12 @@ class Slider extends Component {
             marginTop: -3,
           }}
           minimumTrackStyle={{
-            backgroundColor: '#eee',
+            backgroundColor: '#fff',
             height: 10,
             marginTop: -3,
           }}
           handleStyle={{
-            backgroundColor: '#000',
+            backgroundColor: '#fff',
             border: 0,
             height: 28,
             width: 28,

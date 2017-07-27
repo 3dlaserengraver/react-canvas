@@ -1,4 +1,8 @@
+.Icon path {
+  fill: #fff;
+}
+
 .Tool.hoverable.hover .Icon path,
 .Tool.hoverable.active .Icon path {
-  fill: #777;
+  fill: #bbb;
 }
