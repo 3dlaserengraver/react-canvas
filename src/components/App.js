@@ -25,12 +25,12 @@ class App extends Component {
         <TextField
           placeholder='Enter G-code'
           onEnter={this.send.bind(this)}
-          ref={(consoleTextField) => {this.consoleTextField = consoleTextField;}}
         />
         <TextField
           placeholder='Server Response'
-          ref={(consoleResponse) => {this.consoleResponse = consoleResponse;}}
+          autoFocus={false}
           readOnly={true}
+          ref={(consoleResponseTextField) => {this.consoleResponseTextField = consoleResponseTextField;}}
         />
       </Toolbar>
     ) : null;
@@ -40,7 +40,6 @@ class App extends Component {
         <TextField
           placeholder='Enter Text'
           onChange={this.changeText.bind(this)}
-          ref={(textTextField) => {this.textTextField = textTextField;}}
         />
       </Toolbar>
     ) : null;
@@ -48,46 +47,48 @@ class App extends Component {
     return (
       <div className='App'>
         <Toolbar>
-          <Tool
-            small={true}
-            onClick={this.clear.bind(this)}
-          >
-            <Icon icon='trash' />
-          </Tool>
-          <Tool
-            small={true}
-            onClick={this.upload.bind(this)}
-          >
-            <Icon icon='upload' />
-          </Tool>
-          <Tool
-            small={true}
-            onClick={this.toggleTextEntry.bind(this)}
-            active={this.state.textEnabled}
-            ref={(toggleTextEntryTool) => {this.toggleTextEntryTool = toggleTextEntryTool;}}
-          >
-            <Icon icon='font' />
-          </Tool>
-          <Tool
-            small={true}
-            onClick={this.toggleConsole.bind(this)}
-            active={this.state.consoleEnabled}
-            ref={(toggleConsoleTool) => {this.toggleConsoleTool = toggleConsoleTool;}}
-          >
-            <Icon icon='console' />
-          </Tool>
-          <Slider
-            min={1}
-            max={100}
-            onChange={this.strokeChange.bind(this)}
-            ref={(slider) => {this.strokeSlider = slider;}}
-          />
-          <Slider
-            min={0}
-            max={255}
-            onChange={this.shadeChange.bind(this)}
-            ref={(slider) => {this.shadeSlider = slider;}}
-          />
+          <div className='group small'>
+            <Tool
+              onClick={this.clear.bind(this)}
+            >
+              <Icon icon='trash' />
+            </Tool>
+            <Tool
+              onClick={this.upload.bind(this)}
+            >
+              <Icon icon='upload' />
+            </Tool>
+            <Tool
+              onClick={this.toggleTextEntry.bind(this)}
+              active={this.state.textEnabled}
+              ref={(toggleTextEntryTool) => {this.toggleTextEntryTool = toggleTextEntryTool;}}
+            >
+              <Icon icon='font' />
+            </Tool>
+            <Tool
+              onClick={this.toggleConsole.bind(this)}
+              active={this.state.consoleEnabled}
+              ref={(toggleConsoleTool) => {this.toggleConsoleTool = toggleConsoleTool;}}
+            >
+              <Icon icon='console' />
+            </Tool>
+          </div>
+          <div className='group'>
+            <Slider
+              min={1}
+              max={100}
+              onChange={this.strokeChange.bind(this)}
+              ref={(slider) => {this.strokeSlider = slider;}}
+            />
+          </div>
+          <div className='group'>
+            <Slider
+              min={0}
+              max={255}
+              onChange={this.shadeChange.bind(this)}
+              ref={(slider) => {this.shadeSlider = slider;}}
+            />
+          </div>
         </Toolbar>
         {consoleToolbar}
         {textToolbar}
@@ -161,13 +162,13 @@ class App extends Component {
         this.consoleTextField.setState({
           value: ''
         });
-        this.consoleResponse.setState({
+        this.consoleResponseTextField.setState({
           value: data
         });
         console.log(data);
       })
       .catch(error => {
-        this.consoleResponse.setState({
+        this.consoleResponseTextField.setState({
           value: error.message
         });
         console.log(error);

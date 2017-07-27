@@ -99,9 +99,9 @@ class Canvas extends Component {
 
   textMove({x, y}) {
     let move = {x: x-this.startPoint.x, y: y-this.startPoint.y};
-    this.state.textPoint.x += move.x;
-    this.state.textPoint.y += move.y;
-    this.paintText();
+    this.setState({
+      textPoint: {x: this.state.textPoint.x+move.x, y: this.state.textPoint.y+move.y}
+    });
   }
 
   paintMove({x, y}) {

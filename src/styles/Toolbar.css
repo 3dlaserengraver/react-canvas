@@ -1,6 +1,23 @@
 .Toolbar {
   flex-grow: 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   background-color: #ff0;
+}
+
+.Toolbar .group {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.Toolbar .group.small {
+  flex-grow: 0;
+}
+
+@media screen and (min-width: 600px) {
+    .Toolbar {
+        flex-direction: row;
+    }
 }

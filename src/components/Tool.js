@@ -11,7 +11,6 @@ class Tool extends Component {
 
   render() {
     let className = 'Tool';
-    if (this.props.small) className += ' small';
     if (this.props.active) className += ' active';
     if (this.props.hoverable) className += ' hoverable';
     if (this.state.hover) className += ' hover';
@@ -42,7 +41,6 @@ class Tool extends Component {
 }
 
 Tool.defaultProps = {
-  small: false,
   hoverable: true
 }
 

@@ -19,6 +19,7 @@ class TextField extends Component {
         onChange={this.changeHandler.bind(this)}
         onKeyDown={this.keyDownHandler.bind(this)}
         readOnly={this.props.readOnly}
+        autoFocus={this.props.autoFocus}
       />
     );
   }
@@ -42,7 +43,8 @@ class TextField extends Component {
 
 TextField.defaultProps = {
   placeholder: '',
-  readOnly: false
+  readOnly: false,
+  autoFocus: true
 };
 
 export default TextField;

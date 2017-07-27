@@ -7,7 +7,8 @@ import Tool from './Tool';
 class Slider extends Component {
   render() {
     return (
-      <Tool hoverable={false}>
+      <Tool
+        hoverable={false}>
         <RcSlider
           min={this.props.min}
           max={this.props.max}
